@@ -70,24 +70,24 @@ cli.main(function (args, options) {
 	if (cli.command == 'status') {
         term.hideCursor();
         progressBar = term.progressBar( {
-			barChar: '░',
-			barHeadChar: '░',
-	        percent: true
-        } ) ;
+            barChar: '░',
+            barHeadChar: '░',
+            percent: true
+        });
 
         var displayState = function() {
             client.getState(function (err, state) {
-			    if (err) return cli.error(err);
-			        client.getTrack(function(err, track) {
-				        if (err) return cli.error(err);
-                        progress = state.position / (track.duration / 1000);
-						progressBar.title = track.name;
-                        progressBar.update({
-                            progress: progress,
-                            title: track.name + ' - ' + track.artist
-                        });
-			        });
-		        });
+                if (err) return cli.error(err);
+                client.getTrack(function(err, track) {
+                    if (err) return cli.error(err);
+                    progress = state.position / (track.duration / 1000);
+                    progressBar.title = track.name;
+                    progressBar.update({
+                        progress: progress,
+                        title: track.name + ' - ' + track.artist
+                    });
+                });
+            });
         };
 
         setInterval(displayState, 1000);
