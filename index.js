@@ -3,6 +3,7 @@
 var client = require('spotify-node-applescript');
 var cli = require('cli').enable('version');
 var request = require('request');
+var term = require('terminal-kit').terminal;
 var pkg = require('./package.json');
 
 
@@ -67,16 +68,29 @@ cli.main(function (args, options) {
 	}
 
 	if (cli.command == 'status') {
-		client.getState(function (err, state) {
-			if (err) return cli.error(err);
-			cli.info(state.state);
+        term.hideCursor();
+        progressBar = term.progressBar( {
+			barChar: '░',
+			barHeadChar: '░',
+	        percent: true
+        } ) ;
 
-			client.getTrack(function(err, track) {
-				if (err) return cli.error(err);
-				cli.info(track.name + " - " + track.artist);
-				cli.progress(state.position / track.duration);
-			});
-		});
+        var displayState = function() {
+            client.getState(function (err, state) {
+			    if (err) return cli.error(err);
+			        client.getTrack(function(err, track) {
+				        if (err) return cli.error(err);
+                        progress = state.position / (track.duration / 1000);
+						progressBar.title = track.name;
+                        progressBar.update({
+                            progress: progress,
+                            title: track.name + ' - ' + track.artist
+                        });
+			        });
+		        });
+        };
+
+        setInterval(displayState, 1000);
 	}
 
 });
